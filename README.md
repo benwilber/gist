@@ -29,3 +29,9 @@ $ export GITHUB_PASSWORD=<password>
 $ gist --public --name main.rs --description "My first rust program" --file src/main.rs
 https://gist.github.com/f0b0b2934f6b6ba735711c13b7bf87da
 ```
+
+# Building
+Build with `cargo`
+```
+$ cargo build
+```
