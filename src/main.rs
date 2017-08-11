@@ -63,7 +63,7 @@ fn main() {
                  .help("Make this a public gist."))
         .get_matches();
 
-    let username = match env::var("GITHUB_USERNAME") {
+    let username = match env::var("GIST_GITHUB_USERNAME") {
         Ok(username) => username,
         Err(_) => {
             writeln!(stderr(), "Github username and password required.")
@@ -71,7 +71,7 @@ fn main() {
             process::exit(exitcode::USAGE);
         }
     };
-    let password = match env::var("GITHUB_PASSWORD") {
+    let password = match env::var("GIST_GITHUB_PASSWORD") {
         Ok(password) => password,
         Err(_) => {
             writeln!(stderr(), "Github username and password required.")
