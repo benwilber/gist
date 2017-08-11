@@ -1,4 +1,5 @@
 extern crate clap;
+extern crate exitcode;
 extern crate reqwest;
 #[macro_use]
 extern crate serde_derive;
@@ -7,7 +8,8 @@ extern crate serde_json;
 
 use std::env;
 use std::fs::File;
-use std::io::{self, Read, BufReader, Result};
+use std::io::{self, stderr, Write, Read, BufReader, Result};
+use std::process;
 use clap::{Arg, App};
 use reqwest::Client;
 
@@ -61,11 +63,19 @@ fn main() {
 
     let username = match env::var("GITHUB_USERNAME") {
         Ok(username) => username,
-        Err(_) => panic!("Github username and password required."),
+        Err(_) => {
+            writeln!(stderr(), "Github username and password required.")
+                .expect("Failed to write to stderr.");
+            process::exit(exitcode::USAGE);
+        }
     };
     let password = match env::var("GITHUB_PASSWORD") {
         Ok(password) => password,
-        Err(_) => panic!("Github username and password required."),
+        Err(_) => {
+            writeln!(stderr(), "Github username and password required.")
+                .expect("Failed to write to stderr.");
+            process::exit(exitcode::USAGE);
+        }
     };
 
     let mut buf = String::new();
