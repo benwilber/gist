@@ -7,8 +7,10 @@ extern crate serde_derive;
 extern crate serde_json;
 
 use std::env;
+use std::ffi::OsStr;
 use std::fs::File;
 use std::io::{self, stderr, Write, Read, BufReader, Result};
+use std::path::Path;
 use std::process;
 use clap::{Arg, App};
 use reqwest::Client;
@@ -79,6 +81,7 @@ fn main() {
     };
 
     let mut buf = String::new();
+    let mut filename = OsStr::new("gist.txt");
     match args.value_of("file") {
         None => {
             match read_stdin(&mut buf) {
@@ -88,7 +91,9 @@ fn main() {
         }
         Some(path) => {
             match read_file(String::from(path), &mut buf) {
-                Ok(_) => {}
+                Ok(_) => {
+                    filename = Path::new(path).file_name().unwrap();
+                }
                 Err(e) => panic!("Got error: {:?}", e),
             }
         }
@@ -98,7 +103,7 @@ fn main() {
         "description": args.value_of("description").unwrap_or("gist"),
         "public": args.is_present("public"),
         "files": {
-            args.value_of("name").unwrap_or("gist.txt"): {
+            args.value_of("name").unwrap_or(filename.to_str().unwrap()): {
                 "content": buf
             }
         }
