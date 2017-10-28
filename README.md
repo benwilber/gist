@@ -6,7 +6,7 @@ Command line gist client
 # Usage
 ```shell
 $ gist -h
-Command line gist client 0.1.0
+Command line gist client v1.0.0
 Ben Wilber <benwilber@gmail.com>
 Upload gists from the command line
 
