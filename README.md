@@ -1,6 +1,8 @@
 # gist
 Command line gist client
 
+[![Build Status](https://travis-ci.org/benwilber/gist.svg?branch=master)](https://travis-ci.org/benwilber/gist)
+
 # Usage
 ```shell
 $ gist -h
