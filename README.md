@@ -26,7 +26,7 @@ OPTIONS:
 
 # Example
 ```shell
-$ export GITHUB_USERNAME=benwilber
+$ export GITHUB_USERNAME=<username>
 $ export GITHUB_PASSWORD=<personal-access-token>
 $ gist --public --name main.rs --description "My first rust program" --file src/main.rs
 https://gist.github.com/f0b0b2934f6b6ba735711c13b7bf87da
