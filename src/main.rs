@@ -39,7 +39,7 @@ fn read_file(path: &PathBuf, buf: &mut String) -> Result<usize> {
 fn main() {
 
     let args = App::new("Command line gist client")
-        .version("0.1.0")
+        .version("v1.0.0")
         .author("Ben Wilber <benwilber@gmail.com>")
         .about("Upload gists from the command line")
         .arg(Arg::with_name("file")
