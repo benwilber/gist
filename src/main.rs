@@ -10,7 +10,7 @@ use std::env;
 use std::ffi::OsStr;
 use std::fs::File;
 use std::io::{self, stderr, Write, Read, BufReader, Result};
-use std::path::Path;
+use std::path::PathBuf;
 use std::process;
 use clap::{Arg, App};
 use reqwest::Client;
@@ -20,17 +20,17 @@ struct Gist {
     html_url: String,
 }
 
-fn read_stdin(to_buf: &mut String) -> Result<usize> {
+fn read_stdin(buf: &mut String) -> Result<usize> {
     let stdin = io::stdin();
     let mut handle = stdin.lock();
-    handle.read_to_string(to_buf)
+    handle.read_to_string(buf)
 }
 
-fn read_file(path: String, to_buf: &mut String) -> Result<usize> {
+fn read_file(path: &PathBuf, buf: &mut String) -> Result<usize> {
     match File::open(path) {
         Ok(f) => {
             let mut reader = BufReader::new(f);
-            reader.read_to_string(to_buf)
+            reader.read_to_string(buf)
         }
         Err(e) => Err(e),
     }
@@ -46,21 +46,21 @@ fn main() {
                  .short("f")
                  .long("file")
                  .takes_value(true)
-                 .help("File to upload.  Defaults to stdin."))
+                 .help("File to upload.  Defaults to stdin"))
         .arg(Arg::with_name("name")
                  .short("n")
                  .long("name")
                  .takes_value(true)
-                 .help("Filename of the gist."))
+                 .help("Filename of the gist"))
         .arg(Arg::with_name("description")
                  .short("d")
                  .long("description")
                  .takes_value(true)
-                 .help("Gist description."))
+                 .help("Gist description"))
         .arg(Arg::with_name("public")
                  .short("p")
                  .long("public")
-                 .help("Make this a public gist."))
+                 .help("Make the gist public"))
         .get_matches();
 
     let username = match env::var("GIST_GITHUB_USERNAME") {
@@ -81,21 +81,16 @@ fn main() {
     };
 
     let mut buf = String::new();
+    let mut path = PathBuf::new();
     let mut filename = OsStr::new("gist.txt");
     match args.value_of("file") {
         None => {
-            match read_stdin(&mut buf) {
-                Ok(_) => {}
-                Err(e) => panic!("Got error: {:?}", e),
-            }
+            read_stdin(&mut buf).expect("Error reading stdin");
         }
-        Some(path) => {
-            match read_file(String::from(path), &mut buf) {
-                Ok(_) => {
-                    filename = Path::new(path).file_name().unwrap();
-                }
-                Err(e) => panic!("Got error: {:?}", e),
-            }
+        Some(f) => {
+            path.push(f);
+            filename = path.file_name().unwrap();
+            read_file(&path, &mut buf).expect("Error reading file");
         }
     }
 

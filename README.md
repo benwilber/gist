@@ -2,7 +2,7 @@
 Command line gist client
 
 # Usage
-```
+```shell
 $ gist -h
 Command line gist client 0.1.0
 Ben Wilber <benwilber@gmail.com>
@@ -13,17 +13,17 @@ USAGE:
 
 FLAGS:
     -h, --help       Prints help information
-    -p, --public     Make this a public gist.
+    -p, --public     Make this a public gist
     -V, --version    Prints version information
 
 OPTIONS:
-    -d, --description <description>    Gist description.
-    -f, --file <file>                  File to upload.  Defaults to stdin.
-    -n, --name <name>                  Filename of the gist.
+    -d, --description <description>    Gist description
+    -f, --file <file>                  File to upload.  Defaults to stdin
+    -n, --name <name>                  Filename of the gist
 ```
 
 # Example
-```
+```shell
 $ export GITHUB_USERNAME=benwilber
 $ export GITHUB_PASSWORD=<password>
 $ gist --public --name main.rs --description "My first rust program" --file src/main.rs
@@ -32,6 +32,6 @@ https://gist.github.com/f0b0b2934f6b6ba735711c13b7bf87da
 
 # Building
 Build with `cargo`
-```
+```shell
 $ cargo build
 ```
