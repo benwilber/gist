@@ -6,28 +6,28 @@ Command line gist client
 # Usage
 ```shell
 $ gist -h
-Command line gist client v1.0.0
+Command line gist client v1.0.1
 Ben Wilber <benwilber@gmail.com>
-Upload gists from the command line
+Create gists from the command line
 
 USAGE:
     gist [FLAGS] [OPTIONS]
 
 FLAGS:
     -h, --help       Prints help information
-    -p, --public     Make this a public gist
+    -p, --public     Make the gist public
     -V, --version    Prints version information
 
 OPTIONS:
     -d, --description <description>    Gist description
     -f, --file <file>                  File to upload.  Defaults to stdin
-    -n, --name <name>                  Filename of the gist
+    -n, --name <name>                  Filename of the gist.  Defaults to gist.txt for stdin
 ```
 
 # Example
 ```shell
-$ export GIST_GITHUB_USERNAME=<username>
-$ export GIST_GITHUB_PASSWORD=<personal-access-token>
+$ export GIST_USERNAME=<username>
+$ export GIST_PASSWORD=<personal-access-token>
 $ gist --public --name main.rs --description "My first rust program" --file src/main.rs
 https://gist.github.com/f0b0b2934f6b6ba735711c13b7bf87da
 ```

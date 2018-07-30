@@ -27,21 +27,17 @@ fn read_stdin(buf: &mut String) -> Result<usize> {
 }
 
 fn read_file(path: &PathBuf, buf: &mut String) -> Result<usize> {
-    match File::open(path) {
-        Ok(f) => {
-            let mut reader = BufReader::new(f);
-            reader.read_to_string(buf)
-        }
-        Err(e) => Err(e),
-    }
+    let f = File::open(path)?;
+    let mut reader = BufReader::new(f);
+    reader.read_to_string(buf)
 }
 
 fn main() {
 
     let args = App::new("Command line gist client")
-        .version("v1.0.0")
+        .version("v1.0.1")
         .author("Ben Wilber <benwilber@gmail.com>")
-        .about("Upload gists from the command line")
+        .about("Create gists from the command line")
         .arg(Arg::with_name("file")
                  .short("f")
                  .long("file")
@@ -51,7 +47,7 @@ fn main() {
                  .short("n")
                  .long("name")
                  .takes_value(true)
-                 .help("Filename of the gist"))
+                 .help("Filename of the gist.  Defaults to gist.txt for stdin"))
         .arg(Arg::with_name("description")
                  .short("d")
                  .long("description")
@@ -63,22 +59,18 @@ fn main() {
                  .help("Make the gist public"))
         .get_matches();
 
-    let username = match env::var("GIST_GITHUB_USERNAME") {
-        Ok(username) => username,
-        Err(_) => {
-            writeln!(stderr(), "Github username and password required.")
-                .expect("Failed to write to stderr.");
-            process::exit(exitcode::USAGE);
-        }
-    };
-    let password = match env::var("GIST_GITHUB_PASSWORD") {
-        Ok(password) => password,
-        Err(_) => {
-            writeln!(stderr(), "Github username and password required.")
-                .expect("Failed to write to stderr.");
-            process::exit(exitcode::USAGE);
-        }
-    };
+
+    let username = env::var("GIST_USERNAME").unwrap_or_else(|_err| {
+        writeln!(stderr(), "Github username and password required.")
+            .expect("Failed to write to stderr.");
+        process::exit(exitcode::USAGE);
+    });
+
+    let password = env::var("GIST_PASSWORD").unwrap_or_else(|_err| {
+        writeln!(stderr(), "Github username and password required.")
+            .expect("Failed to write to stderr.");
+        process::exit(exitcode::USAGE);
+    });
 
     let mut buf = String::new();
     let mut path = PathBuf::new();
@@ -104,11 +96,10 @@ fn main() {
         }
     });
 
-    let url = "https://api.github.com/gists";
     match Client::new() {
         Ok(client) => {
             let resp = client
-                .post(url)
+                .post("https://api.github.com/gists")
                 .basic_auth(username, Some(password))
                 .json(&body)
                 .send();
