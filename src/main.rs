@@ -6,14 +6,14 @@ extern crate serde_derive;
 #[macro_use]
 extern crate serde_json;
 
+use clap::{App, Arg};
+use reqwest::Client;
 use std::env;
 use std::ffi::OsStr;
 use std::fs::File;
-use std::io::{self, stderr, Write, Read, BufReader, Result};
+use std::io::{self, stderr, BufReader, Read, Result, Write};
 use std::path::PathBuf;
 use std::process;
-use clap::{Arg, App};
-use reqwest::Client;
 
 #[derive(Deserialize, Debug)]
 struct Gist {
@@ -33,32 +33,38 @@ fn read_file(path: &PathBuf, buf: &mut String) -> Result<usize> {
 }
 
 fn main() {
-
     let args = App::new("Command line gist client")
         .version("v1.0.1")
         .author("Ben Wilber <benwilber@gmail.com>")
-        .about("Create gists from the command line")
-        .arg(Arg::with_name("file")
-                 .short("f")
-                 .long("file")
-                 .takes_value(true)
-                 .help("File to upload.  Defaults to stdin"))
-        .arg(Arg::with_name("name")
-                 .short("n")
-                 .long("name")
-                 .takes_value(true)
-                 .help("Filename of the gist.  Defaults to gist.txt for stdin"))
-        .arg(Arg::with_name("description")
-                 .short("d")
-                 .long("description")
-                 .takes_value(true)
-                 .help("Gist description"))
-        .arg(Arg::with_name("public")
-                 .short("p")
-                 .long("public")
-                 .help("Make the gist public"))
+        .about("Create gists from the command line.")
+        .arg(
+            Arg::with_name("file")
+                .short("f")
+                .long("file")
+                .takes_value(true)
+                .help("File to upload.  Defaults to stdin."),
+        )
+        .arg(
+            Arg::with_name("name")
+                .short("n")
+                .long("name")
+                .takes_value(true)
+                .help("Filename of the gist.  Defaults to gist.txt for stdin."),
+        )
+        .arg(
+            Arg::with_name("description")
+                .short("d")
+                .long("description")
+                .takes_value(true)
+                .help("Gist description."),
+        )
+        .arg(
+            Arg::with_name("public")
+                .short("p")
+                .long("public")
+                .help("Make the gist public."),
+        )
         .get_matches();
-
 
     let username = env::var("GIST_USERNAME").unwrap_or_else(|_err| {
         writeln!(stderr(), "Github username and password required.")
@@ -90,7 +96,7 @@ fn main() {
         "description": args.value_of("description").unwrap_or("gist"),
         "public": args.is_present("public"),
         "files": {
-            args.value_of("name").unwrap_or(filename.to_str().unwrap()): {
+            args.value_of("name").unwrap_or_else(|| filename.to_str().unwrap()): {
                 "content": buf
             }
         }
@@ -113,5 +119,4 @@ fn main() {
         }
         Err(e) => panic!("Got error: {:?}", e),
     }
-
 }
